@@ -1,1 +1,30 @@
+body{
+    margin: 0;
+    background: #4870df;
+}
 
+svg{
+    width: 100vw;
+    height: 100vh;
+}
+
+.kraj{
+    fill: gray;
+    stroke: black;
+    stroke-width: 1;
+    transition: 0.2s;
+}
+
+.kraj:hover{
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+#panel{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+}

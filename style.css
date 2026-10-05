@@ -157,3 +157,17 @@ svg{
     border-bottom: 3px solid rgba(255, 255, 255, 0.8);
     border-radius: 2px;
 }
+/* Odblokowanie przesuwania i skalowania na telefonach */
+.tekst-blok {
+    touch-action: none;
+}
+
+.blok-naglowek {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.uchwyt-rozmiaru {
+    touch-action: none;
+}

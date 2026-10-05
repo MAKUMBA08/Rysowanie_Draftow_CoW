@@ -90,7 +90,8 @@ svg{
     color: #ddd;
     margin-bottom: 4px;
     user-select: none;
-    cursor: grab; /* Rączka wskazująca możliwość chwycenia */
+    cursor: grab;
+    touch-action: none; /* Blokuje gest przewijania strony na nagłówku */
 }
 
 .blok-naglowek:active {

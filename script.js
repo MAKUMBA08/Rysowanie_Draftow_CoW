@@ -104,3 +104,52 @@ toggleTeamsBtn.addEventListener("click", () => {
     toggleTeamsBtn.classList.toggle("active", czyDruzynyWidoczne);
 });
 
+document.querySelectorAll(".tekst-blok").forEach(blok => {
+    const uchwyt = blok.querySelector(".uchwyt-rozmiaru");
+
+    let czySkaluje = false;
+    let startX = 0, startY = 0;
+    let startWidth = 0, startHeight = 0;
+
+    function zacznijSkalowanie(e) {
+        czySkaluje = true;
+        const punkt = e.touches ? e.touches[0] : e;
+        startX = punkt.clientX;
+        startY = punkt.clientY;
+
+        const rect = blok.getBoundingClientRect();
+        startWidth = rect.width;
+        startHeight = rect.height;
+
+        e.stopPropagation(); // Żeby nie aktywowało przesuwania
+    }
+
+    function skaluj(e) {
+        if (!czySkaluje) return;
+
+        const punkt = e.touches ? e.touches[0] : e;
+        const roznicaX = punkt.clientX - startX;
+        const roznicaY = punkt.clientY - startY;
+
+        // Minimalne wymiary okienka
+        const nowaSzerokosc = Math.max(140, startWidth + roznicaX);
+        const nowaWysokosc = Math.max(80, startHeight + roznicaY);
+
+        blok.style.width = `${nowaSzerokosc}px`;
+        blok.style.height = `${nowaWysokosc}px`;
+    }
+
+    function zakonczSkalowanie() {
+        czySkaluje = false;
+    }
+
+    // Obsługa myszki
+    uchwyt.addEventListener("mousedown", zacznijSkalowanie);
+    document.addEventListener("mousemove", skaluj);
+    document.addEventListener("mouseup", zakonczSkalowanie);
+
+    // Obsługa dotyku na smartfonach
+    uchwyt.addEventListener("touchstart", zacznijSkalowanie, { passive: false });
+    document.addEventListener("touchmove", skaluj, { passive: false });
+    document.addEventListener("touchend", zakonczSkalowanie);
+});

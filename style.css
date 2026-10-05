@@ -124,4 +124,35 @@ svg{
     color: rgba(255, 255, 255, 0.5);
     font-weight: normal;
 }
+.tekst-blok {
+    /* ... pozostałe Twoje style .tekst-blok bez zmian ... */
+    resize: none !important; /* Wyłączamy mały systemowy uchwyt */
+    position: fixed;
+    touch-action: none;      /* Zapobiega przypadkowemu przewijaniu strony na telefonie */
+}
 
+/* Duży uchwyt w prawym dolnym rogu */
+.uchwyt-rozmiaru {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 34px;
+    height: 34px;
+    cursor: nwse-resize;
+    touch-action: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+/* Wygląd ikony / prążków w rogu */
+.uchwyt-rozmiaru::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-right: 3px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+}

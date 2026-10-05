@@ -28,3 +28,100 @@ svg{
     padding: 10px;
     border-radius: 10px;
 }
+
+/* Domyślnie ukrywamy bloki */
+.tekst-blok {
+    display: none;             /* Ukryte na start */
+    position: fixed;
+    left: 30vw;
+    width: 14vw;
+    min-width: 140px;
+    height: 12vh;
+    min-height: 80px;
+    background: rgba(20, 25, 40, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+    flex-direction: column;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    z-index: 50;
+    backdrop-filter: blur(2px);
+    resize: both;
+    overflow: hidden;
+}
+
+/* Klasa włączająca widoczność po kliknięciu przycisku */
+.tekst-blok.pokaz {
+    display: flex;
+}
+
+/* Podświetlenie przycisku, gdy drużyny są włączone */
+#toggle-teams-btn.active {
+    background-color: #2b73d9;
+    color: white;
+    font-weight: bold;
+    border-color: #1a56aa;
+}
+
+/* Wyraźniejszy uchwyt do skalowania w prawym dolnym rogu */
+.tekst-blok::-webkit-resizer {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+}
+
+/* Pozycje pionowe zaznaczone na czerwono */
+.blok-gora {
+    top: 27vh;
+}
+
+.blok-dol {
+    top: 40vh;
+}
+
+/* Nagłówek panelu z próbnikiem koloru */
+.blok-naglowek {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #ddd;
+    margin-bottom: 4px;
+    user-select: none;
+    cursor: grab; /* Rączka wskazująca możliwość chwycenia */
+}
+
+.blok-naglowek:active {
+    cursor: grabbing; /* Rączka zaciśnięta podczas przesuwania */
+}
+
+.blok-kolor {
+    width: 22px;
+    height: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Pole tekstowe wewnątrz panelu */
+.blok-tresc {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 40px;
+    color: #ffffff;           /* Domyślny kolor tekstu */
+    line-height: 1.3;
+}
+
+.blok-tresc::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: normal;
+}
+

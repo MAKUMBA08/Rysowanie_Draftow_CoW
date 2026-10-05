@@ -15,6 +15,7 @@ eraserBtn.addEventListener("click", () => {
     eraserBtn.classList.toggle("active", trybGumki);
 });
 
+// Kolorowanie państw
 document.querySelectorAll(".kraj").forEach(element => {
     element.addEventListener("click", () => {
         let kodKraju = "";
@@ -25,7 +26,7 @@ document.querySelectorAll(".kraj").forEach(element => {
 
         document.querySelectorAll("." + kodKraju).forEach(czesc => {
             if (trybGumki) {
-                czesc.style.fill = "gray"; // albo "" jeśli chcesz reset SVG
+                czesc.style.fill = "gray";
             } else {
                 czesc.style.fill = wybranyKolor;
             }
@@ -33,133 +34,117 @@ document.querySelectorAll(".kraj").forEach(element => {
     });
 });
 
-// Obsługa przesuwania (drag & drop) myszką oraz dotykiem na telefonie
+// Pokaż/ukryj drużyny
+const toggleTeamsBtn = document.querySelector("#toggle-teams-btn");
+const blokiDruzyn = document.querySelectorAll(".tekst-blok");
+let czyDruzynyWidoczne = false;
+
+if (toggleTeamsBtn) {
+    toggleTeamsBtn.addEventListener("click", () => {
+        czyDruzynyWidoczne = !czyDruzynyWidoczne;
+        blokiDruzyn.forEach(blok => {
+            blok.classList.toggle("pokaz", czyDruzynyWidoczne);
+        });
+        toggleTeamsBtn.classList.toggle("active", czyDruzynyWidoczne);
+    });
+}
+
+// Obsługa PRZESUWANIA i ZMIANY ROZMIARU (Pointer Events - Myszka + Telefon)
 document.querySelectorAll(".tekst-blok").forEach(blok => {
     const naglowek = blok.querySelector(".blok-naglowek");
     const colorInput = blok.querySelector(".blok-kolor");
     const textarea = blok.querySelector(".blok-tresc");
+    const uchwyt = blok.querySelector(".uchwyt-rozmiaru");
 
     // Zmiana koloru tekstu
-    colorInput.addEventListener("input", () => {
-        textarea.style.color = colorInput.value;
-    });
+    if (colorInput && textarea) {
+        colorInput.addEventListener("input", () => {
+            textarea.style.color = colorInput.value;
+        });
+    }
 
+    // --- 1. PRZESUWANIE OKIENKA ---
     let czyPrzesuwa = false;
     let przesuniecieX = 0;
     let przesuniecieY = 0;
 
-    function zacznijPrzesuwac(e) {
-        // Ignorujemy kliknięcie w sam próbnik koloru
-        if (e.target === colorInput) return;
+    naglowek.addEventListener("pointerdown", (e) => {
+        if (e.target === colorInput) return; // Kliknięcie w próbnik nie przesuwa
 
         czyPrzesuwa = true;
+        naglowek.setPointerCapture(e.pointerId); // "Przykleja" dotyk do belki
 
-        const punkt = e.touches ? e.touches[0] : e;
         const rect = blok.getBoundingClientRect();
-        przesuniecieX = punkt.clientX - rect.left;
-        przesuniecieY = punkt.clientY - rect.top;
+        przesuniecieX = e.clientX - rect.left;
+        przesuniecieY = e.clientY - rect.top;
 
-        // Przenosimy przesuwany blok na wierzch
+        // Przeniesienie aktywnego okna na wierzch
         document.querySelectorAll(".tekst-blok").forEach(b => b.style.zIndex = "50");
         blok.style.zIndex = "60";
-    }
+    });
 
-    function przesuwaj(e) {
+    naglowek.addEventListener("pointermove", (e) => {
         if (!czyPrzesuwa) return;
 
-        // Blokujemy domyślne przewijanie ekranu telefonu podczas przesuwania okna
-        if (e.cancelable) e.preventDefault();
-
-        const punkt = e.touches ? e.touches[0] : e;
-        const nowyX = punkt.clientX - przesuniecieX;
-        const nowyY = punkt.clientY - przesuniecieY;
+        const nowyX = e.clientX - przesuniecieX;
+        const nowyY = e.clientY - przesuniecieY;
 
         blok.style.left = `${nowyX}px`;
         blok.style.top = `${nowyY}px`;
-    }
-
-    function zakonczPrzesuwac() {
-        czyPrzesuwa = false;
-    }
-
-    // Obsługa myszki (komputer)
-    naglowek.addEventListener("mousedown", zacznijPrzesuwac);
-    document.addEventListener("mousemove", przesuwaj);
-    document.addEventListener("mouseup", zakonczPrzesuwac);
-
-    // Obsługa dotyku (telefon / tablet)
-    naglowek.addEventListener("touchstart", zacznijPrzesuwac, { passive: false });
-    document.addEventListener("touchmove", przesuwaj, { passive: false });
-    document.addEventListener("touchend", zakonczPrzesuwac);
-});
-
-const toggleTeamsBtn = document.querySelector("#toggle-teams-btn");
-const blokiDruzyn = document.querySelectorAll(".tekst-blok");
-
-let czyDruzynyWidoczne = false;
-
-toggleTeamsBtn.addEventListener("click", () => {
-    czyDruzynyWidoczne = !czyDruzynyWidoczne;
-
-    // Przełączamy klasę .pokaz na obu blokach
-    blokiDruzyn.forEach(blok => {
-        blok.classList.toggle("pokaz", czyDruzynyWidoczne);
     });
 
-    // Wizualne podświetlenie przycisku
-    toggleTeamsBtn.classList.toggle("active", czyDruzynyWidoczne);
-});
-
-// Obsługa powiększania/pomniejszania (myszka + dotyk)
-document.querySelectorAll(".tekst-blok").forEach(blok => {
-    const uchwyt = blok.querySelector(".uchwyt-rozmiaru");
-    if (!uchwyt) return;
-
-    let czySkaluje = false;
-    let startX = 0, startY = 0;
-    let startWidth = 0, startHeight = 0;
-
-    function zacznijSkalowanie(e) {
-        czySkaluje = true;
-        const punkt = e.touches ? e.touches[0] : e;
-        startX = punkt.clientX;
-        startY = punkt.clientY;
-
-        const rect = blok.getBoundingClientRect();
-        startWidth = rect.width;
-        startHeight = rect.height;
-
-        e.stopPropagation(); // Żeby nie aktywowało przesuwania
+    function zakonczPrzesuwanie(e) {
+        if (czyPrzesuwa) {
+            czyPrzesuwa = false;
+            try {
+                naglowek.releasePointerCapture(e.pointerId);
+            } catch (err) {}
+        }
     }
 
-    function skaluj(e) {
-        if (!czySkaluje) return;
+    naglowek.addEventListener("pointerup", zakonczPrzesuwanie);
+    naglowek.addEventListener("pointercancel", zakonczPrzesuwanie);
 
-        if (e.cancelable) e.preventDefault();
+    // --- 2. POWIĘKSZANIE / POMNIEJSZANIE OKIENKA ---
+    if (uchwyt) {
+        let czySkaluje = false;
+        let startX = 0, startY = 0;
+        let startW = 0, startH = 0;
 
-        const punkt = e.touches ? e.touches[0] : e;
-        const roznicaX = punkt.clientX - startX;
-        const roznicaY = punkt.clientY - startY;
+        uchwyt.addEventListener("pointerdown", (e) => {
+            czySkaluje = true;
+            uchwyt.setPointerCapture(e.pointerId);
 
-        // Minimalne wymiary okienka
-        const nowaSzerokosc = Math.max(140, startWidth + roznicaX);
-        const nowaWysokosc = Math.max(80, startHeight + roznicaY);
+            startX = e.clientX;
+            startY = e.clientY;
 
-        blok.style.width = `${nowaSzerokosc}px`;
-        blok.style.height = `${nowaWysokosc}px`;
+            const rect = blok.getBoundingClientRect();
+            startW = rect.width;
+            startH = rect.height;
+
+            e.stopPropagation();
+        });
+
+        uchwyt.addEventListener("pointermove", (e) => {
+            if (!czySkaluje) return;
+
+            const nowaSzerokosc = Math.max(140, startW + (e.clientX - startX));
+            const nowaWysokosc = Math.max(80, startH + (e.clientY - startY));
+
+            blok.style.width = `${nowaSzerokosc}px`;
+            blok.style.height = `${nowaWysokosc}px`;
+        });
+
+        function zakonczSkalowanie(e) {
+            if (czySkaluje) {
+                czySkaluje = false;
+                try {
+                    uchwyt.releasePointerCapture(e.pointerId);
+                } catch (err) {}
+            }
+        }
+
+        uchwyt.addEventListener("pointerup", zakonczSkalowanie);
+        uchwyt.addEventListener("pointercancel", zakonczSkalowanie);
     }
-
-    function zakonczSkalowanie() {
-        czySkaluje = false;
-    }
-
-    // Obsługa myszki
-    uchwyt.addEventListener("mousedown", zacznijSkalowanie);
-    document.addEventListener("mousemove", skaluj);
-    document.addEventListener("mouseup", zakonczSkalowanie);
-
-    // Obsługa dotyku na smartfonach
-    uchwyt.addEventListener("touchstart", zacznijSkalowanie, { passive: false });
-    document.addEventListener("touchmove", skaluj, { passive: false });
-    document.addEventListener("touchend", zakonczSkalowanie);
 });
